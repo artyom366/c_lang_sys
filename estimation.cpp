@@ -5,7 +5,8 @@
 
 unsigned long long int getBits(int num);
 int getSetBits(int num);
-char* getMaskMatrix();
+char* getLookupTable();
+int getSetBits(int num, char* lookupTable);
 
 using namespace std;
 
@@ -15,11 +16,15 @@ int main()
 	printf("Enter an integer number: ");
 	scanf_s("%d", &num);
 
-	int counter = getSetBits(num);
-	cout << "Bits set: " << counter << endl;
+	int counterNaive = getSetBits(num);
+	cout << "Bits set: " << counterNaive << endl;
 
 	unsigned long long int binary = getBits(num);
 	cout << "Binary form check: " << binary << endl;
+
+	char* lookupTable = getLookupTable();
+	int counterLookup = getSetBits(num, lookupTable);
+	cout << "Bits set (lookup table): " << counterLookup << endl;
 
 	_getch();
 	return 0;
@@ -59,13 +64,39 @@ int getSetBits(int num) {
 	return counter;
 }
 
-char* getMaskMatrix() {
+char* getLookupTable() {
 
-	char mask[255];
-	for (int i = 0; i < 255; i++) {
-		mask[i] = i;
+	char maskMatrix[255];
+	short mask = 1 << 7;
+	for (short i = 0; i < 256; i++) {
+
+		i = i & 0b0000000011111111;
+
+		int counter = 0;
+		for (int j = 0; j < 8; j++) {
+
+			if ((i & mask) > 0) {
+				counter++;
+			}
+
+			mask = mask >> 1;
+		}
+
+		maskMatrix[i] = counter;
 	}
 
-	return mask;
+	return maskMatrix;
 }
 
+int getSetBits(int num, char* lookupTable) {
+
+	int counter = 0;
+	for (int i = 0; i < 4; i++) {
+
+		int byte = (num >> 8 * i) & 0b11111111;
+		int bits = lookupTable[byte];
+		counter = counter + bits;
+	}
+
+	return counter;
+}
