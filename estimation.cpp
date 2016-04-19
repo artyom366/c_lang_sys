@@ -3,7 +3,7 @@
 #include <limits.h>
 #include <iostream>
 
-unsigned long long int getBits(int num);
+char* getBits(int num, char* binary);
 int getSetBits(int num);
 char* getLookupTable(char* lookupTable);
 int getSetBits(int num, char* lookupTable);
@@ -19,7 +19,8 @@ int main()
 	int counterNaive = getSetBits(num);
 	cout << "Bits set: " << counterNaive << endl;
 
-	unsigned long long int binary = getBits(num);
+	char binary[33];
+	getBits(num, binary);
 	cout << "Binary form check: " << binary << endl;
 
 	char lookupTable[256];
@@ -32,17 +33,23 @@ int main()
 	return 0;
 }
 
-unsigned long long int getBits(int num) {
+char* getBits(int num, char* binary) {
 
-	int shift = 1;
-	unsigned  long long int result = 0;
-	while (num) {
-		result = result + shift * (num % 2);
-		num = num / 2;
-		shift = shift * 10;
+	unsigned int mask = 1 << 31;
+	for (int i = 0; i < 32; i++) {
+
+		if ((num & mask) > 0) {
+			binary[i] = '1';
+		}
+		else {
+			binary[i] = '0';
+		}
+
+		mask = mask >> 1;
 	}
 
-	return result;
+	binary[32] = '\0';
+	return binary;
 }
 
 int getSetBits(int num) {
