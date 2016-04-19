@@ -5,7 +5,7 @@
 
 unsigned long long int getBits(int num);
 int getSetBits(int num);
-char* getLookupTable();
+char* getLookupTable(char* lookupTable);
 int getSetBits(int num, char* lookupTable);
 
 using namespace std;
@@ -22,7 +22,9 @@ int main()
 	unsigned long long int binary = getBits(num);
 	cout << "Binary form check: " << binary << endl;
 
-	char* lookupTable = getLookupTable();
+	char lookupTable[256];
+	getLookupTable(lookupTable);
+
 	int counterLookup = getSetBits(num, lookupTable);
 	cout << "Bits set (lookup table): " << counterLookup << endl;
 
@@ -64,9 +66,8 @@ int getSetBits(int num) {
 	return counter;
 }
 
-char* getLookupTable() {
+char* getLookupTable(char* lookupTable) {
 
-	char maskMatrix[256];
 	for (short i = 0; i < 256; i++) {
 
 		short mask = 1 << 7;
@@ -82,10 +83,10 @@ char* getLookupTable() {
 			mask = mask >> 1;
 		}
 
-		maskMatrix[i] = counter;
+		lookupTable[i] = counter;
 	}
 
-	return maskMatrix;
+	return lookupTable;
 }
 
 int getSetBits(int num, char* lookupTable) {
