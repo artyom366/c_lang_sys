@@ -66,10 +66,10 @@ int getSetBits(int num) {
 
 char* getLookupTable() {
 
-	char maskMatrix[255];
-	short mask = 1 << 7;
+	char maskMatrix[256];
 	for (short i = 0; i < 256; i++) {
 
+		short mask = 1 << 7;
 		i = i & 0b0000000011111111;
 
 		int counter = 0;
