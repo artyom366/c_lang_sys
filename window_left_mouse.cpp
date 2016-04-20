@@ -1,6 +1,5 @@
 #include <windows.h>
 
-
 LONG WINAPI WndProc(HWND, UINT, WPARAM, LPARAM);
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
@@ -34,39 +33,38 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 LONG WINAPI WndProc(HWND hwnd, UINT Message, WPARAM wparam, LPARAM lparam)
 {
-	HDC hdc; 
+	HDC hdc;
 	PAINTSTRUCT ps;
 	WORD x, y;
-	TCHAR message[100];
+	WCHAR* message = (wchar_t *) calloc(16, sizeof(wchar_t));
+
 
 	switch (Message) {
 
-		case WM_PAINT:
-			hdc = BeginPaint(hwnd, &ps);
-			TextOut(hdc, 50, 50, L"Hello World!", 13);
-			EndPaint(hwnd, &ps);
+	case WM_PAINT:
+		hdc = BeginPaint(hwnd, &ps);
+		TextOut(hdc, 50, 50, L"Hello World!", 13);
+		EndPaint(hwnd, &ps);
 		break;
 
-		case WM_RBUTTONUP:
-			MessageBox(hwnd, L"Right button is clicked", L"Message", MB_OK);
+	case WM_RBUTTONUP:
+		MessageBox(hwnd, L"Right button is clicked", L"Message", MB_OK);
 		break;
 
-		case WM_LBUTTONDOWN:
-			hdc = GetDC(hwnd);
-			//hdc = BeginPaint(hwnd, &ps);
-			x = LOWORD(lparam);
-			y = HIWORD(lparam);
-			//TextOut(hdc, x, y, L"Test", 4);
-			TextOut(hdc, x, y, L"bdf", 100);
-			//EndPaint(hwnd, &ps);
+	case WM_LBUTTONDOWN:
+		hdc = GetDC(hwnd);
+		x = LOWORD(lparam);
+		y = HIWORD(lparam);
+		wsprintf(message, L"x: %d, y: %d", x, y);
+		TextOut(hdc, x, y, message, 16);
 		break;
 
-		case WM_DESTROY:
-			PostQuitMessage(0);
+	case WM_DESTROY:
+		PostQuitMessage(0);
 		break;
 
-		default:
-			return DefWindowProc(hwnd, Message, wparam, lparam);
+	default:
+		return DefWindowProc(hwnd, Message, wparam, lparam);
 	}
 
 	return 0;
