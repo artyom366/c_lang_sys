@@ -1,5 +1,6 @@
 #include <windows.h>
 
+
 LONG WINAPI WndProc(HWND, UINT, WPARAM, LPARAM);
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
@@ -35,6 +36,8 @@ LONG WINAPI WndProc(HWND hwnd, UINT Message, WPARAM wparam, LPARAM lparam)
 {
 	HDC hdc; 
 	PAINTSTRUCT ps;
+	WORD x, y;
+	TCHAR message[100];
 
 	switch (Message) {
 
@@ -49,7 +52,13 @@ LONG WINAPI WndProc(HWND hwnd, UINT Message, WPARAM wparam, LPARAM lparam)
 		break;
 
 		case WM_LBUTTONDOWN:
-
+			hdc = GetDC(hwnd);
+			//hdc = BeginPaint(hwnd, &ps);
+			x = LOWORD(lparam);
+			y = HIWORD(lparam);
+			//TextOut(hdc, x, y, L"Test", 4);
+			TextOut(hdc, x, y, L"bdf", 100);
+			//EndPaint(hwnd, &ps);
 		break;
 
 		case WM_DESTROY:
