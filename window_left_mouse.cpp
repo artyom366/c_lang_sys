@@ -56,7 +56,7 @@ LONG WINAPI WndProc(HWND hwnd, UINT Message, WPARAM wparam, LPARAM lparam)
 		x = LOWORD(lparam);
 		y = HIWORD(lparam);
 		wsprintf(message, L"x: %d, y: %d", x, y);
-		TextOut(hdc, x, y, message, 16);
+		TextOut(hdc, x, y, message, wcslen(message));
 		ReleaseDC(hwnd, hdc);
 		break;
 
