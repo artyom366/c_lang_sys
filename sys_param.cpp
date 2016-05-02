@@ -1,72 +1,174 @@
-#include <windows.h>
+#include<iostream>
+#include<windows.h>
+#include<tchar.h>
 
-LONG WINAPI WndProc(HWND, UINT, WPARAM, LPARAM);
+using namespace std;
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+void main()
 {
-	HWND hwnd;
-	MSG msg;
-	WNDCLASS w;
 
-	memset(&w, 0, sizeof(w));
+	//os version
+	OSVERSIONINFO osvi;
+	ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
+	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	int result = GetVersionEx((OSVERSIONINFO*)&osvi);
 
-	w.style = CS_HREDRAW | CS_VREDRAW;
-	w.lpfnWndProc = WndProc;
-	w.hInstance = hInstance;
-	w.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
-	w.lpszClassName = L"My Class";
-
-	RegisterClass(&w);
-
-	hwnd = CreateWindow(L"My Class", L"My title", WS_OVERLAPPEDWINDOW, 300, 200, 200, 200, NULL, NULL, hInstance, NULL);
-	ShowWindow(hwnd, nCmdShow);
-	UpdateWindow(hwnd);
-
-	while (GetMessage(&msg, NULL, 0, 0))
-	{
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
+	if (result) {
+		if (osvi.dwMajorVersion >= 6) {
+			cout << "OS is Windows 7" << endl;
+		}
 	}
 
-	return msg.wParam;
-}
+	//pc name
+	wchar_t lpBuffer[MAX_COMPUTERNAME_LENGTH + 1];
+	DWORD lpnSize = sizeof(lpBuffer);
+	GetComputerName(lpBuffer, &lpnSize);
 
-LONG WINAPI WndProc(HWND hwnd, UINT Message, WPARAM wparam, LPARAM lparam)
-{
-	HDC hdc;
-	PAINTSTRUCT ps;
-	WORD x, y;
-	WCHAR* message = (wchar_t *)calloc(16, sizeof(wchar_t));
-	int result;
+	wcout << "PC name: " << lpBuffer << endl;
 
-	switch (Message) {
+	//local time
+	SYSTEMTIME systemTime;
+	GetLocalTime(&systemTime);
 
-	case WM_PAINT:
-		//http://www.firststeps.ru/mfc/winapi/r.php?37
+	cout << "Local time: " << systemTime.wHour << ":" << systemTime.wMinute << ":" << systemTime.wSecond << endl;
 
-		hdc = BeginPaint(hwnd, &ps);
-		
-		OSVERSIONINFO osvi;
-		ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
-		osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-		result = GetVersionEx((OSVERSIONINFO*)&osvi);
+	//time zone
+	TIME_ZONE_INFORMATION timeZone;
+	GetTimeZoneInformation(&timeZone);
 
-		if (result )
+	wcout << "Time zone: " << timeZone.StandardName << endl;
 
-		EndPaint(hwnd, &ps);
-		break;
+	//default lang
+	LANGID langId = GetUserDefaultLangID();
 
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		break;
+	if (langId == 1033) {
+		cout << "Default language: US English" << endl;
+	}
+	
+	//ver language name
+	DWORD wLang = 0x0409;
+	wchar_t szLang[100];
+	DWORD cchLang = sizeof(szLang);
+	VerLanguageName(wLang, szLang, cchLang);
 
-	default:
-		return DefWindowProc(hwnd, Message, wparam, lparam);
+	wcout << "Ver languange name: " << szLang << endl;
+
+	//user name
+	wchar_t lpBuffer_1[10];
+	DWORD lpnSize_1 = sizeof(lpBuffer);
+	GetUserName(lpBuffer_1, &lpnSize_1);
+
+	wcout << "User name: " << lpBuffer << endl;
+
+	//current directory
+	wchar_t lpBuffer_2[MAX_PATH + 1];
+	DWORD nBufferLength = sizeof(lpBuffer_2);
+	GetCurrentDirectory(nBufferLength, lpBuffer_2);
+
+	wcout << "Current directory: " << lpBuffer << endl;
+
+	//windows directory
+	wchar_t lpBuffer_3[MAX_PATH + 1];
+	UINT uSize = sizeof(lpBuffer_3);
+	GetWindowsDirectory(lpBuffer_3, uSize);
+
+	wcout << "Windows directory: " << lpBuffer_3 << endl;
+
+	//system directory
+	wchar_t lpBuffer_4[MAX_PATH + 1];
+	UINT uSize_1 = sizeof(lpBuffer_4);
+	GetSystemDirectory(lpBuffer_4, uSize_1);
+
+	wcout << "System directory: " << lpBuffer_4 << endl;
+
+	//drives
+	DWORD drives = GetLogicalDrives();
+	unsigned int mask = 1 << 31;
+
+	cout << "Drives: ";
+	for (int i = 0; i < 31; i++) {
+
+		if ((drives & mask) > 0) {
+			
+			switch (i) {
+				case 31: {
+					cout << "A ";
+				}
+						break;
+
+				case 30: {
+					cout << "B ";
+				}
+						break;
+
+				case 29: {
+					cout << "C ";
+				}
+						break;
+
+				case 28: {
+					cout << "D ";
+				}
+						break;
+
+				case 27: {
+					cout << "E ";
+				}
+						break;
+
+				case 26: {
+					cout << "F ";
+				}
+						break;
+
+				case 25: {
+					cout << "G ";
+				}
+						break;
+
+				case 24: {
+					cout << "H ";
+				}
+						break;
+
+				case 23: {
+					cout << "I ";
+				}
+						break;
+			}
+		}
+
+		mask = mask >> 1;
+	}
+	cout << endl;
+
+	//drives string
+	wchar_t lpBuffer_5[MAX_PATH + 1];
+	DWORD nBufferLength_1 = sizeof(lpBuffer_5);
+	GetLogicalDriveStrings(nBufferLength_1, lpBuffer_5);
+
+	wcout << "Drives string: " << lpBuffer_5 << endl;
+
+	//drive type
+	wchar_t lpRootPathName[] = {L"C:\\"};
+	UINT type = GetDriveType(lpRootPathName);
+
+	if (type == 3) {
+		cout << "Drive type: HDD" << endl;
 	}
 
-	return 0;
-}
+	//disk free space
+	wchar_t lpRootPathName_1[] = { L"C:\\" };
+	DWORD lpSectorsPerCluster;
+	DWORD lpBytesPerSector;
+	DWORD lpNumberOfFreeClusters;
+	DWORD lpTotalNumberOfClusters;
+	GetDiskFreeSpace(lpRootPathName_1, &lpSectorsPerCluster, &lpBytesPerSector, &lpNumberOfFreeClusters, &lpTotalNumberOfClusters);
 
-int getOSVersionInfo {
+	cout << "Sectors per cluster: " << lpSectorsPerCluster << endl;
+	cout << "Bytes per sector: " << lpBytesPerSector << endl;
+	cout << "Number of free clusters: " << lpNumberOfFreeClusters << endl;
+	cout << "Total number of clusters: " << lpTotalNumberOfClusters << endl;
 
+	system("PAUSE");
 }
